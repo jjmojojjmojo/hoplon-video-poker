@@ -1,0 +1,39 @@
+(page "index.html"
+    (:require [video-poker.core :as core]))
+
+(defc current-hand (core/deal :fixed ["CA" "H4" "DA" "HA" "S3"]))
+(defc= current-info (core/read-hand (keys current-hand)))
+
+(defc= what-do-i-have (first current-info))
+(defc= score (second current-info))
+
+(defc to-reload (map #(cell true) @current-hand))
+
+
+(cell= (prn (map-indexed vector current-hand)))
+(cell= (prn to-reload))
+
+(html
+  (head
+    (title "Hoplon Video Poker")
+    (link 
+      :rel "stylesheet" 
+      :href "css/style.css" 
+      :type "text/css"))
+  
+  (body
+    (h1 "Video Poker!")
+    (div 
+      :class "current-hand"
+      :text what-do-i-have)
+    (div
+      (button 
+        :click #(
+    (div :class "hand"
+      (loop-tpl
+        :bindings [[idx [card url]] (cell= (map-indexed vector current-hand))]
+        (let [status (nth @to-reload @idx)]
+          (img 
+            :src url
+            :do-class (cell= {:selected (not status)})
+            :click #(swap! status not)))))))

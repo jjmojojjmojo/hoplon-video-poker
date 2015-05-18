@@ -1,0 +1,8 @@
+.hand img {
+  width: 10%;
+  height: auto;
+}
+
+.selected {
+  border: 3px #FF0000 solid;
+}
