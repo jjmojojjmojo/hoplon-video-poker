@@ -1,7 +1,9 @@
 (ns video-poker.core
     (:require [clojure.set :as s]
               [cljs.reader :refer [read-string]]
-              [clojure.string :as string]))
+              [tailrecursion.javelin :refer [cell]]
+              [clojure.string :as string])
+    (:require-macros [tailrecursion.javelin :refer [cell= defc defc=]]))
 
 ;; all card values in one suit
 (def suit-range ["A" 2 3 4 5 6 7 8 9 10 "J" "Q" "K"])
@@ -18,7 +20,9 @@
     (into {} (map (fn [v] [(str suit-code v) (str "cards/" suit "/" v ".svg")]) suit-range))))
 
 ;; all cards
-(def deck
+(defn deck
+  "Creates a deck"
+  []
   (let [hearts (suit-urls "hearts")
         spades (suit-urls "spades")
         diamonds (suit-urls "diamonds")
@@ -26,21 +30,47 @@
     (conj hearts spades diamonds clubs)))
 
 ;; discarded cards
-(def discarded (atom []))
+(defc discarded [])
 
 ;; cards without the discarded ones
-(def available (atom (deck)))
+(defc available (deck))
+
+
+(defn reset-deck
+  "Resets all of the cells regarding cards dealt and available"
+  []
+  (reset! discarded [])
+  (reset! available (deck)))
+
+(prn available)
 
 ;; map of cards to numeric values for sorting
 (def card-values
   (into {} (map-indexed (fn [i v] [v (+ i 1)]) suit-range)))
 
 (defn deal
+  "Return a random card and update the available atom"
+  ([]
+    (let [card (rand-nth (vec @available))
+          idx (first card)]
+      (swap! available dissoc idx)
+      card))
+  ([pick]
+    (let [url (get @available pick)]
+      (swap! available dissoc pick)
+      [pick url])))
+  
+(defn discard
+  "Put a card in the discard pile"
+  [card]
+  (swap! discarded conj card))
+
+(defn deal-hand
   "Return a random vector of card codes and their corresponding image urls"
   [& {:keys [fixed num] :or {fixed nil num 5}}]
   (if (not (nil? fixed))
-    (map (fn [x] [x (get deck x)]) fixed)
-    (repeatedly num #(rand-nth (vec deck)))))
+    (map deal fixed)
+    (repeatedly num #(deal))))
 
 (defn value-code
   "Return the value code (A, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, K, Q) for the

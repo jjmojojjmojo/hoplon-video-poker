@@ -1,17 +1,39 @@
 (page "index.html"
     (:require [video-poker.core :as core]))
 
-(defc current-hand (core/deal :fixed ["CA" "H4" "DA" "HA" "S3"]))
+(defc current-hand (core/deal-hand :fixed ["CA" "H4" "DA" "HA" "S3"]))
 (defc= current-info (core/read-hand (keys current-hand)))
 
 (defc= what-do-i-have (first current-info))
 (defc= score (second current-info))
+(defc= total 0)
 
-(defc to-reload (map #(cell true) @current-hand))
-
+(defc hold-cards (repeatedly 5 #(cell false)))
+(cell= held-cards (filter #(true? %1) hold-cards))
 
 (cell= (prn (map-indexed vector current-hand)))
-(cell= (prn to-reload))
+
+(cell= (prn core/discarded))
+
+(defn reset-hold
+  "Reset the hold cards to their initial state"
+  (reset! hold-cards (repeatedly 5 #(cell true))))
+
+(defn muck
+  "Discard the entire hand, reset the deck, re-deal, clear holds"
+  []
+  (dosync 
+    (core/reset-deck)
+    (reset! current-hand (core/deal-hand))
+    (reset-hold))
+
+(defn new-cards
+  "Discard the unheld cards, get new ones from the deck"
+  (let [discarded (map #(if core/discard %1) @hold-cards)
+        dealt (map #(core/deal) @hold-cards)]
+    
+  (reset-hold)))
+  
 
 (html
   (head
@@ -28,12 +50,13 @@
       :text what-do-i-have)
     (div
       (button 
-        :click #(
+        :click #(reset! current-hand (core/deal-hand))
+        :text "deal"))
     (div :class "hand"
       (loop-tpl
         :bindings [[idx [card url]] (cell= (map-indexed vector current-hand))]
-        (let [status (nth @to-reload @idx)]
+        (let [held (nth @hold-cards @idx)]
           (img 
             :src url
-            :do-class (cell= {:selected (not status)})
-            :click #(swap! status not)))))))
+            :do-class (cell= {:selected held})
+            :click #(swap! held not)))))))
