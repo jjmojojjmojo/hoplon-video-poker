@@ -52,13 +52,14 @@
   "Return a random card and update the available atom"
   ([]
     (let [card (rand-nth (vec @available))
-          idx (first card)]
+          idx (first card)
+          url (second card)]
       (swap! available dissoc idx)
-      card))
+      [idx {:url url :held false}]))
   ([pick]
     (let [url (get @available pick)]
       (swap! available dissoc pick)
-      [pick url])))
+      [pick {:url url :held false}])))
   
 (defn discard
   "Put a card in the discard pile"
