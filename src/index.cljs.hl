@@ -1,10 +1,13 @@
 (page "index.html"
     (:require [video-poker.core :as core]))
 
-(defc new-count 0)
-(defc current-hand (core/deal-hand :fixed ["CA" "H4" "DA" "HA" "S3"]))
+(defc deal-count 0)
+;; (defc current-hand (core/deal-hand :fixed ["CA" "H4" "D5" "H3" "S2"]))
+(defc current-hand (core/deal-hand))
 (defc= current-info (core/read-hand (keys current-hand)))
 (defc= current-hand-index (map-indexed #(vector %1 %2) current-hand))
+
+(cell= (prn current-info))
 
 (defc= what-do-i-have (first current-info))
 (defc= score (second current-info))
@@ -12,10 +15,30 @@
 
 (defc= held-cards (map #(get-in % [1 1 :held]) current-hand-index))
 
+(defc= game-state 
+  (case deal-count
+    0 :first-deal
+    1 :second-deal
+    2 :third-deal
+    :game-over))
+
+(defc= deal-label
+  (case game-state
+    :first-deal "deal"
+    :second-deal "deal"
+    :third-deal "record score"
+    :game-over "try again"))
+
+;; True if the user is not allowed to hold a card
+(defc= lock-holds
+  (case game-state
+    :game-over true
+    false))
+
+(cell= (prn game-state))
+
 ;;(cell= (prn current-hand-index))
 ;;(cell= (prn held-cards))
-
-(cell= (prn new-count))
 
 (defn record-score
   "Add the score from the current hand to the total"
@@ -26,7 +49,7 @@
   "Discard the entire hand, reset the deck, re-deal, clear holds"
   []
   (dosync 
-    (reset! new-count 0)
+    (reset! deal-count 0)
     (core/reset-deck)
     (reset! current-hand (core/deal-hand))))
 
@@ -55,7 +78,7 @@
   "Hold/Unhold a card, but only when the user is allowed to
    do so (they get two chances)"
   [idx]
-  (if (not= new-count 2)
+  (if (not @lock-holds)
     (swap! 
       current-hand 
         (fn [value] 
@@ -70,31 +93,35 @@
     current-hand 
       (assoc-in @current-hand [idx] (core/deal))))
 
+(defn replace-hold-cards
+  "Replace all of the held cards with new ones"
+  []
+  (apply-to-hand
+    #(if (not (:held %3))
+      (new-card %1))))
+
+(defn clear-hold-cards
+  "Clear the hold state on all cards"
+  []
+  (apply-to-hand
+    #(hold-state %1 false)))
+
 (defn new-cards
   "Discard the unheld cards, get new ones from the deck"
   []
-  (case @new-count
+  (case @game-state
     ;; score and reset the cards
-    2 (dosync 
-        (muck)
-        (record-score))
+    :game-over (muck)
     ;; turn off the holds when the next option is score/muck
-    1 (dosync
-        (swap! new-count inc)
-        (apply-to-hand
-          #(hold-state %1 false)))
+    :third-deal
+      (dosync
+        (swap! deal-count inc)
+        (clear-hold-cards)
+        (record-score))
     ;; replace the non-held cards
     (dosync 
-      (swap! new-count inc)
-      (apply-to-hand
-        #(if (not (:held %3))
-          (new-card %1))))))
-
-(defc= deal-label
-  (case new-count
-    0 "deal"
-    1 "deal"
-    2 "try again"))
+      (swap! deal-count inc)
+      (replace-hold-cards))))
 
 (html
   (head

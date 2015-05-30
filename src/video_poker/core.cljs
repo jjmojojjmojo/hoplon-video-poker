@@ -71,7 +71,7 @@
   [& {:keys [fixed num] :or {fixed nil num 5}}]
   (if (not (nil? fixed))
     (map deal fixed)
-    (repeatedly num #(deal))))
+    (vec (repeatedly num #(deal)))))
 
 (defn value-code
   "Return the value code (A, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, K, Q) for the
@@ -87,7 +87,7 @@
   [code]
   (let [value (value-code code)]
     (get card-values value)))
-     
+
 (defn count-same-value
   [hand]
   "Given a hand of cards, return a map of each value and the cards within it"
@@ -141,7 +141,7 @@
   "Return true if the hand contains cards in a straight, or each card 
    is sequentially higher in value than the previous. Ace can represent 1 or 
    the value after King."
-  (let [sorted (sort #(card-value %1) hand)
+  (let [sorted (sort-by #(card-value %1) hand)
         numeric (map card-value sorted)
         aces (filterv #(= (value-code %1) "A") sorted)]
     (if (int-sequence? numeric)
