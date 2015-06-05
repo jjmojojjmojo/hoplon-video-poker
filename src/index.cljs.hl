@@ -2,8 +2,8 @@
     (:require [video-poker.core :as core]))
 
 (defc deal-count 0)
-;; (defc current-hand (core/deal-hand :fixed ["CA" "H4" "D5" "H3" "S2"]))
-(defc current-hand (core/deal-hand))
+(defc current-hand (core/deal-hand :fixed ["S4" "C4" "C2" "S3" "D5"]))
+;;(defc current-hand (core/deal-hand))
 (defc= current-info (core/read-hand (keys current-hand)))
 (defc= current-hand-index (map-indexed #(vector %1 %2) current-hand))
 
@@ -33,6 +33,7 @@
 (defc= lock-holds
   (case game-state
     :game-over true
+    :third-deal true
     false))
 
 (cell= (prn game-state))
@@ -113,6 +114,11 @@
     ;; score and reset the cards
     :game-over (muck)
     ;; turn off the holds when the next option is score/muck
+    :second-deal 
+      (dosync
+        (replace-hold-cards)
+        (clear-hold-cards)
+        (swap! deal-count inc))
     :third-deal
       (dosync
         (swap! deal-count inc)

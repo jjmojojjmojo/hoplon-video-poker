@@ -69,9 +69,10 @@
 (defn deal-hand
   "Return a random vector of card codes and their corresponding image urls"
   [& {:keys [fixed num] :or {fixed nil num 5}}]
-  (if (not (nil? fixed))
+  (vec
+    (if (not (nil? fixed))
     (map deal fixed)
-    (vec (repeatedly num #(deal)))))
+    (repeatedly num #(deal)))))
 
 (defn value-code
   "Return the value code (A, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, K, Q) for the
@@ -100,27 +101,34 @@
 
 (defn pairs
   [hand]
-  "Return the number of pairs in the given hand"
+  "Return the pairs in the given hand"
   (let [counts (count-same-value hand)]
-    (count (filter #(= (count (second %1)) 2) counts))))
+    (filter #(= (count (second %1)) 2) counts)))
 
 (defn pair?
   [hand]
-  "Return true if the hand contains exactly one pair"
-  (= 1 (pairs hand)))
+  "Return the single pair if the hand contains exactly one pair"
+  (let [pairs (pairs hand)]
+    (if (= 1 (count pairs))
+      (first pairs)
+      false)))
 
 (defn two-pair?
   [hand]
-  "Return true if the hand contains two distinct pairs"
-  (= 2 (pairs hand)))
+  "Return the cards that make up the two pairs if the hand contains 
+   two distinct pairs"
+  (let [pairs (pairs hand)]
+    (if (= 2 (count pairs))
+      (flatten pairs)
+      false)))
     
 (defn three-of-a-kind?
   [hand]
-  "Return true if the hand contains 3-of-a-kind (3 cards of the same suit)"
-  (let [counts (count-same-value hand)]
-    (if 
-      (some #(= (count (second %1)) 3) counts)
-      true
+  "Return the three cards indicative of 3-of-a-kind (3 cards of the same value)"
+  (let [counts (count-same-value hand)
+        trips (filter #(= 3 (count %1)) (vals counts))]
+    (if (some? trips)
+      (flatten trips)
       false)))
 
 (defn int-sequence?
@@ -136,18 +144,33 @@
     true
   (catch js/Error e false)))
 
+(defn ace?
+  [code]
+  "Return true if the given card code is an Ace"
+  (= (value-code code) "A"))
+
+(defn king?
+  [code]
+  "Return true if the given card code is a King"
+  (= (value-code code) "K"))
+
 (defn straight?
   [hand]
-  "Return true if the hand contains cards in a straight, or each card 
+  "Return sequence if the hand contains cards in a straight, or each card 
    is sequentially higher in value than the previous. Ace can represent 1 or 
-   the value after King."
+   the value after King.
+   
+   Returns the cards that constitute the straight.
+   "
   (let [sorted (sort-by #(card-value %1) hand)
         numeric (map card-value sorted)
-        aces (filterv #(= (value-code %1) "A") sorted)]
+        aces (filterv ace? sorted)]
+    (prn card-values)
+    (prn (last sorted))
     (if (int-sequence? numeric)
-      true
-      (if (and (= (count aces) 1) (= (last numeric) 13))
-        true
+      hand
+      (if (and (= (count aces) 1) (king? (last sorted)))
+        hand
         false))))
       
 (defn flush?
@@ -155,7 +178,7 @@
   "Return true if the hand is a flush (all cards are of the same suit)"
   (let [counts (count-same-suit hand)]
     (if (= (count counts) 1)
-      true
+      hand
       false)))
 
 (defn full-house?
@@ -166,15 +189,16 @@
     (and 
       (three-of-a-kind? hand)
       (pair? hand))
-    true
+    hand
     false))
 
 (defn four-of-a-kind?
   [hand]
   "Return true if the hand contains four cards of the same value"
-  (let [counts (count-same-value hand)]
-    (if (some #(= (count (second %1)) 4) counts)
-      true
+  (let [counts (count-same-value hand)
+        quads (filter #(= 4 (count %1)) (vals counts))]
+    (if (some? quads)
+      (flatten quads)
       false)))
 
 (defn straight-flush?
@@ -185,7 +209,7 @@
     (and 
       (straight? hand)
       (flush? hand))
-    true
+    hand
     false))
 
 (defn royal-flush?
@@ -196,8 +220,18 @@
     (and 
       (straight-flush? hand)
       (some #(= (value-code %1) "A") hand))
-    true
+    hand
     false))
+
+(defn high-card?
+  [hand]
+  "Return the highest card in the hand. Aces are always highest."
+  (let [sorted (sort-by #(card-value %1) hand)
+        high (last sorted)
+        lead (first sorted)]
+    (if (ace? lead)
+      lead
+      high)))
 
 ;; mapping of each kind of hand, to its value and check function
 (def hands 
@@ -209,15 +243,16 @@
     [40 flush? "Flush"]
     [60 four-of-a-kind? "Four of a Kind"]
     [70 straight-flush? "Straight Flush"]
-    [80 royal-flush? "Royal Flush"]])
+    [80 royal-flush? "Royal Flush"]
+    [0 high-card? "High Card"]])
 
 (defn read-hand
   [hand]
   "Return a string and a value representing the given hand (e.g. 'Royal Flush' 80)"
+  (prn (count-same-value hand))
+  (prn (count-same-suit hand))
   (loop [to-inspect hands]
     (let [[value check name] (first to-inspect)]
-      (if (nil? value)
-        ["High Card" 0]
-        (if (check hand)
-          [name value]
-          (recur (rest to-inspect)))))))
+      (if-let [matches (check hand)]
+        [name value]
+        (recur (rest to-inspect))))))

@@ -1,0 +1,46 @@
+(page "scoringtest.html"
+    (:require [video-poker.core :as core]))
+
+(defn deal-and-reset
+  "Deal a hand, then reset the deck"
+  [& {:keys [fixed]}]
+  (let [hand (core/deal-hand :fixed fixed)]
+    (core/reset-deck)
+    hand))
+
+(defc hands {
+  "Pair"                    (deal-and-reset :fixed ["3S" "10D" "10C" "QH" "2D"])
+  "Two pair"                (deal-and-reset :fixed ["3S" "10D" "10C" "QH" "QD"])
+  "Three of a kind"         (deal-and-reset :fixed ["10S" "10D" "10C" "QH" "2D"])
+  "Four of a kind"          (deal-and-reset :fixed ["10S" "10D" "10C" "10H" "2D"])
+  "Full house"              (deal-and-reset :fixed ["QS" "10D" "10C" "QH" "QD"])
+  "Flush"                   (deal-and-reset :fixed ["3S" "10S" "JS" "QS" "2S"])
+  "Straight - middle"       (deal-and-reset :fixed ["3S" "4D" "5C" "6H" "7D"])
+  "Straight - ace low"      (deal-and-reset :fixed ["AS" "2D" "3C" "4H" "5D"])
+  "Straight - ace high"     (deal-and-reset :fixed ["AS" "JD" "10C" "QH" "KD"])
+  "Straight flush, ace low" (deal-and-reset :fixed ["AS" "2S" "3S" "4S" "5S"])
+  "Straight flush, middle"  (deal-and-reset :fixed ["4D" "6D" "8D" "5D" "7D"])
+  "Royal flush"             (deal-and-reset :fixed ["AH" "JH" "10H" "QH" "KH"])})
+
+(cell= (prn hands))
+
+(html
+  (head
+    (title "Hoplon Video Poker - Hand Scoring Test")
+    (link 
+      :rel "stylesheet" 
+      :href "css/style.css" 
+      :type "text/css"))
+  
+  (body
+    (h1 "Video Poker Testing!")
+    (div
+      (loop-tpl 
+        :bindings [[expected hand] hands]
+        (div
+         (h1 :text expected)
+         (div :class "hand"
+          (loop-tpl
+           :bindings [[card info] hand]
+             (img 
+               :src (cell= (:url info))))))))))
