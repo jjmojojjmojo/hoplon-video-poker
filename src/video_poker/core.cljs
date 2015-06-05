@@ -58,6 +58,7 @@
       [idx {:url url :held false}]))
   ([pick]
     (let [url (get @available pick)]
+      (prn @available)
       (swap! available dissoc pick)
       [pick {:url url :held false}])))
   
