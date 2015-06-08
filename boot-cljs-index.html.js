@@ -8,7 +8,5 @@ goog.addDependency("../clojure/string.js", ['clojure.string'], ['goog.string', '
 goog.addDependency("../tailrecursion/hoplon.js", ['tailrecursion.hoplon'], ['cljsjs.jquery', 'cljs.core', 'tailrecursion.javelin', 'clojure.string', 'cljs.reader']);
 goog.addDependency("../clojure/set.js", ['clojure.set'], ['cljs.core']);
 goog.addDependency("../video_poker/core.js", ['video_poker.core'], ['cljs.core', 'tailrecursion.javelin', 'clojure.set', 'clojure.string', 'cljs.reader']);
-goog.addDependency("../tailrecursion/hoplon/app_pages/_scoringtest_DOT_html.js", ['tailrecursion.hoplon.app_pages._scoringtest_DOT_html'], ['tailrecursion.hoplon', 'cljs.core', 'tailrecursion.javelin', 'video_poker.core']);
-goog.addDependency("../boot/cljs/scoringtest/html.js", ['boot.cljs.scoringtest.html'], ['cljs.core', 'tailrecursion.hoplon.app_pages._scoringtest_DOT_html']);
 goog.addDependency("../tailrecursion/hoplon/app_pages/_index_DOT_html.js", ['tailrecursion.hoplon.app_pages._index_DOT_html'], ['tailrecursion.hoplon', 'cljs.core', 'tailrecursion.javelin', 'video_poker.core']);
 goog.addDependency("../boot/cljs/index/html.js", ['boot.cljs.index.html'], ['cljs.core', 'tailrecursion.hoplon.app_pages._index_DOT_html']);

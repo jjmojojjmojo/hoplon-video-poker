@@ -48,8 +48,8 @@ return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMP
  * Return a random card and update the available atom
  */
 video_poker.core.deal = (function video_poker$core$deal(){
-var G__7117 = arguments.length;
-switch (G__7117) {
+var G__6094 = arguments.length;
+switch (G__6094) {
 case 0:
 return video_poker.core.deal.cljs$core$IFn$_invoke$arity$0();
 
@@ -95,22 +95,22 @@ var argseq__5207__auto__ = ((((0) < arguments.length))?(new cljs.core.IndexedSeq
 return video_poker.core.deal_hand.cljs$core$IFn$_invoke$arity$variadic(argseq__5207__auto__);
 });
 
-video_poker.core.deal_hand.cljs$core$IFn$_invoke$arity$variadic = (function (p__7120){
-var map__7121 = p__7120;
-var map__7121__$1 = ((cljs.core.seq_QMARK_.call(null,map__7121))?cljs.core.apply.call(null,cljs.core.hash_map,map__7121):map__7121);
-var num = cljs.core.get.call(null,map__7121__$1,new cljs.core.Keyword(null,"num","num",1985240673),(5));
-var fixed = cljs.core.get.call(null,map__7121__$1,new cljs.core.Keyword(null,"fixed","fixed",-562004358),null);
-return cljs.core.vec.call(null,((!((fixed == null)))?cljs.core.map.call(null,video_poker.core.deal,fixed):cljs.core.repeatedly.call(null,num,((function (map__7121,map__7121__$1,num,fixed){
+video_poker.core.deal_hand.cljs$core$IFn$_invoke$arity$variadic = (function (p__6097){
+var map__6098 = p__6097;
+var map__6098__$1 = ((cljs.core.seq_QMARK_.call(null,map__6098))?cljs.core.apply.call(null,cljs.core.hash_map,map__6098):map__6098);
+var num = cljs.core.get.call(null,map__6098__$1,new cljs.core.Keyword(null,"num","num",1985240673),(5));
+var fixed = cljs.core.get.call(null,map__6098__$1,new cljs.core.Keyword(null,"fixed","fixed",-562004358),null);
+return cljs.core.vec.call(null,((!((fixed == null)))?cljs.core.map.call(null,video_poker.core.deal,fixed):cljs.core.repeatedly.call(null,num,((function (map__6098,map__6098__$1,num,fixed){
 return (function (){
 return video_poker.core.deal.call(null);
-});})(map__7121,map__7121__$1,num,fixed))
+});})(map__6098,map__6098__$1,num,fixed))
 )));
 });
 
 video_poker.core.deal_hand.cljs$lang$maxFixedArity = (0);
 
-video_poker.core.deal_hand.cljs$lang$applyTo = (function (seq7119){
-return video_poker.core.deal_hand.cljs$core$IFn$_invoke$arity$variadic(cljs.core.seq.call(null,seq7119));
+video_poker.core.deal_hand.cljs$lang$applyTo = (function (seq6096){
+return video_poker.core.deal_hand.cljs$core$IFn$_invoke$arity$variadic(cljs.core.seq.call(null,seq6096));
 });
 /**
  * Return the value code (A, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, J, K, Q) for the
@@ -133,22 +133,22 @@ return cljs.core.get.call(null,video_poker.core.card_values,value);
 });
 video_poker.core.count_same_value = (function video_poker$core$count_same_value(hand){
 
-return cljs.core.group_by.call(null,(function (p1__7122_SHARP_){
-return video_poker.core.value_code.call(null,p1__7122_SHARP_);
+return cljs.core.group_by.call(null,(function (p1__6099_SHARP_){
+return video_poker.core.value_code.call(null,p1__6099_SHARP_);
 }),hand);
 });
 video_poker.core.count_same_suit = (function video_poker$core$count_same_suit(hand){
 
-return cljs.core.group_by.call(null,(function (p1__7123_SHARP_){
-return video_poker.core.suit_code.call(null,p1__7123_SHARP_);
+return cljs.core.group_by.call(null,(function (p1__6100_SHARP_){
+return video_poker.core.suit_code.call(null,p1__6100_SHARP_);
 }),hand);
 });
 video_poker.core.pairs = (function video_poker$core$pairs(hand){
 
 var counts = video_poker.core.count_same_value.call(null,hand);
 return cljs.core.filter.call(null,((function (counts){
-return (function (p1__7124_SHARP_){
-return cljs.core._EQ_.call(null,cljs.core.count.call(null,cljs.core.second.call(null,p1__7124_SHARP_)),(2));
+return (function (p1__6101_SHARP_){
+return cljs.core._EQ_.call(null,cljs.core.count.call(null,cljs.core.second.call(null,p1__6101_SHARP_)),(2));
 });})(counts))
 ,counts);
 });
@@ -174,8 +174,8 @@ video_poker.core.three_of_a_kind_QMARK_ = (function video_poker$core$three_of_a_
 
 var counts = video_poker.core.count_same_value.call(null,hand);
 var trips = cljs.core.filter.call(null,((function (counts){
-return (function (p1__7125_SHARP_){
-return cljs.core._EQ_.call(null,(3),cljs.core.count.call(null,p1__7125_SHARP_));
+return (function (p1__6102_SHARP_){
+return cljs.core._EQ_.call(null,(3),cljs.core.count.call(null,p1__6102_SHARP_));
 });})(counts))
 ,cljs.core.vals.call(null,counts));
 if((cljs.core.count.call(null,trips) > (0))){
@@ -195,11 +195,11 @@ throw (new Error("Not Sequential"));
 }),s);
 
 return true;
-}catch (e7127){if((e7127 instanceof Error)){
-var e = e7127;
+}catch (e6104){if((e6104 instanceof Error)){
+var e = e6104;
 return false;
 } else {
-throw e7127;
+throw e6104;
 
 }
 }});
@@ -213,8 +213,8 @@ return cljs.core._EQ_.call(null,video_poker.core.value_code.call(null,code),"K")
 });
 video_poker.core.straight_QMARK_ = (function video_poker$core$straight_QMARK_(hand){
 
-var sorted = cljs.core.sort_by.call(null,(function (p1__7128_SHARP_){
-return video_poker.core.card_value.call(null,p1__7128_SHARP_);
+var sorted = cljs.core.sort_by.call(null,(function (p1__6105_SHARP_){
+return video_poker.core.card_value.call(null,p1__6105_SHARP_);
 }),hand);
 var numeric = cljs.core.map.call(null,video_poker.core.card_value,sorted);
 var aces = cljs.core.filterv.call(null,video_poker.core.ace_QMARK_,sorted);
@@ -257,8 +257,8 @@ video_poker.core.four_of_a_kind_QMARK_ = (function video_poker$core$four_of_a_ki
 
 var counts = video_poker.core.count_same_value.call(null,hand);
 var quads = cljs.core.filter.call(null,((function (counts){
-return (function (p1__7129_SHARP_){
-return cljs.core._EQ_.call(null,(4),cljs.core.count.call(null,p1__7129_SHARP_));
+return (function (p1__6106_SHARP_){
+return cljs.core._EQ_.call(null,(4),cljs.core.count.call(null,p1__6106_SHARP_));
 });})(counts))
 ,cljs.core.vals.call(null,counts));
 if((cljs.core.count.call(null,quads) > (0))){
@@ -286,14 +286,14 @@ video_poker.core.royal_flush_QMARK_ = (function video_poker$core$royal_flush_QMA
 if(cljs.core.truth_((function (){var and__4155__auto__ = video_poker.core.straight_flush_QMARK_.call(null,hand);
 if(cljs.core.truth_(and__4155__auto__)){
 var and__4155__auto____$1 = cljs.core.some.call(null,((function (and__4155__auto__){
-return (function (p1__7130_SHARP_){
-return cljs.core._EQ_.call(null,video_poker.core.value_code.call(null,p1__7130_SHARP_),"A");
+return (function (p1__6107_SHARP_){
+return cljs.core._EQ_.call(null,video_poker.core.value_code.call(null,p1__6107_SHARP_),"A");
 });})(and__4155__auto__))
 ,hand);
 if(cljs.core.truth_(and__4155__auto____$1)){
 return cljs.core.some.call(null,((function (and__4155__auto____$1,and__4155__auto__){
-return (function (p1__7131_SHARP_){
-return cljs.core._EQ_.call(null,video_poker.core.value_code.call(null,p1__7131_SHARP_),"K");
+return (function (p1__6108_SHARP_){
+return cljs.core._EQ_.call(null,video_poker.core.value_code.call(null,p1__6108_SHARP_),"K");
 });})(and__4155__auto____$1,and__4155__auto__))
 ,hand);
 } else {
@@ -310,8 +310,8 @@ return false;
 });
 video_poker.core.high_card_QMARK_ = (function video_poker$core$high_card_QMARK_(hand){
 
-var sorted = cljs.core.sort_by.call(null,(function (p1__7132_SHARP_){
-return video_poker.core.card_value.call(null,p1__7132_SHARP_);
+var sorted = cljs.core.sort_by.call(null,(function (p1__6109_SHARP_){
+return video_poker.core.card_value.call(null,p1__6109_SHARP_);
 }),hand);
 var high = cljs.core.last.call(null,sorted);
 var lead = cljs.core.first.call(null,sorted);
@@ -326,17 +326,17 @@ video_poker.core.read_hand = (function video_poker$core$read_hand(hand){
 
 var to_inspect = video_poker.core.hands;
 while(true){
-var vec__7134 = cljs.core.first.call(null,to_inspect);
-var value = cljs.core.nth.call(null,vec__7134,(0),null);
-var check = cljs.core.nth.call(null,vec__7134,(1),null);
-var name = cljs.core.nth.call(null,vec__7134,(2),null);
+var vec__6111 = cljs.core.first.call(null,to_inspect);
+var value = cljs.core.nth.call(null,vec__6111,(0),null);
+var check = cljs.core.nth.call(null,vec__6111,(1),null);
+var name = cljs.core.nth.call(null,vec__6111,(2),null);
 var temp__4124__auto__ = check.call(null,hand);
 if(cljs.core.truth_(temp__4124__auto__)){
 var matches = temp__4124__auto__;
 return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [name,value,cljs.core.vec.call(null,matches)], null);
 } else {
-var G__7135 = cljs.core.rest.call(null,to_inspect);
-to_inspect = G__7135;
+var G__6112 = cljs.core.rest.call(null,to_inspect);
+to_inspect = G__6112;
 continue;
 }
 break;
