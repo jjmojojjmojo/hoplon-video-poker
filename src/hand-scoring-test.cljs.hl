@@ -9,20 +9,19 @@
     hand))
 
 (defc hands {
-  "Pair"                    (deal-and-reset :fixed ["S3" "D10" "C10" "HQ" "D2"])
-  "Two pair"                (deal-and-reset :fixed ["S3" "D10" "C10" "HQ" "DQ"])
-  "Three of a kind"         (deal-and-reset :fixed ["S10" "D10" "C10" "HQ" "D2"])
-  "Four of a kind"          (deal-and-reset :fixed ["S10" "D10" "C10" "H10" "D2"])
-  "Full house"              (deal-and-reset :fixed ["SQ" "D10" "C10" "HQ" "DQ"])
-  "Flush"                   (deal-and-reset :fixed ["S3" "S10" "SJ" "SQ" "S2"])
-  "Straight - middle"       (deal-and-reset :fixed ["S3" "D4" "C5" "H6" "D7"])
-  "Straight - ace low"      (deal-and-reset :fixed ["SA" "D2" "C3" "H4" "D5"])
-  "Straight - ace high"     (deal-and-reset :fixed ["SA" "DJ" "C10" "HQ" "DK"])
-  "Straight flush, ace low" (deal-and-reset :fixed ["SA" "S2" "S3" "S4" "S5"])
-  "Straight flush, middle"  (deal-and-reset :fixed ["D4" "D6" "D8" "D5" "D7"])
-  "Royal flush"             (deal-and-reset :fixed ["HA" "HJ" "H10" "HQ" "HK"])})
-
-(cell= (prn hands))
+  "Pair"                                   (deal-and-reset :fixed ["S3" "D10" "C10" "HQ" "D2"])
+  "Two pair"                               (deal-and-reset :fixed ["S3" "D10" "C10" "HQ" "DQ"])
+  "Three of a kind"                        (deal-and-reset :fixed ["S10" "D10" "C10" "HQ" "D2"])
+  "Four of a kind"                         (deal-and-reset :fixed ["S10" "D10" "C10" "H10" "D2"])
+  "Full house"                             (deal-and-reset :fixed ["SQ" "D10" "C10" "HQ" "DQ"])
+  "Flush"                                  (deal-and-reset :fixed ["S3" "S10" "SJ" "SQ" "S2"])
+  "Straight - middle"                      (deal-and-reset :fixed ["S3" "D4" "C5" "H6" "D7"])
+  "Straight - ace low"                     (deal-and-reset :fixed ["SA" "D2" "C3" "H4" "D5"])
+  "Straight - ace high"                    (deal-and-reset :fixed ["SA" "DJ" "C10" "HQ" "DK"])
+  "Straight flush, ace low"                (deal-and-reset :fixed ["SA" "S2" "S3" "S4" "S5"])
+  "Straight flush, middle"                 (deal-and-reset :fixed ["D4" "D6" "D8" "D5" "D7"])
+  "Royal flush"                            (deal-and-reset :fixed ["HA" "HJ" "H10" "HQ" "HK"])
+  "High Card - Bug shows up as straight"   (deal-and-reset :fixed ["HA" "HK" "SQ" "DJ" "D6"])})
 
 (html
   (head
@@ -37,10 +36,23 @@
     (div
       (loop-tpl 
         :bindings [[expected hand] hands]
+        (let [score (core/read-hand (keys @hand))]
+        (prn (keys @hand))
         (div
          (h1 :text expected)
          (div :class "hand"
-          (loop-tpl
-           :bindings [[card info] hand]
-             (img 
-               :src (cell= (:url info))))))))))
+            (div
+              (span "Hand: ")
+              (span 
+                :text (cell= (first score))))
+            (div 
+              (span "Score: ") 
+              (span
+                :text (cell= (second score))))
+            (div
+              (span "Cards involved:")
+              (span :text (cell= (nth score 2))))
+            (loop-tpl
+             :bindings [[card info] hand]
+               (img 
+                 :src (cell= (:url info)))))))))))

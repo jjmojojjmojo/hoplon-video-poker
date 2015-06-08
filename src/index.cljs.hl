@@ -2,8 +2,8 @@
     (:require [video-poker.core :as core]))
 
 (defc deal-count 0)
-(defc current-hand (core/deal-hand :fixed ["S4" "C4" "C2" "S3" "D5"]))
-;;(defc current-hand (core/deal-hand))
+;;(defc current-hand (core/deal-hand :fixed ["S4" "C4" "C2" "S3" "D5"]))
+(defc current-hand (core/deal-hand))
 (defc= current-info (core/read-hand (keys current-hand)))
 (defc= current-hand-index (map-indexed #(vector %1 %2) current-hand))
 
@@ -11,6 +11,7 @@
 
 (defc= what-do-i-have (first current-info))
 (defc= score (second current-info))
+(defc= scored-cards (nth current-info 2))
 (defc total 0)
 
 (defc= held-cards (map #(get-in % [1 1 :held]) current-hand-index))
@@ -19,27 +20,19 @@
   (case deal-count
     0 :first-deal
     1 :second-deal
-    2 :third-deal
     :game-over))
 
 (defc= deal-label
   (case game-state
     :first-deal "deal"
     :second-deal "deal"
-    :third-deal "record score"
     :game-over "try again"))
 
 ;; True if the user is not allowed to hold a card
 (defc= lock-holds
   (case game-state
     :game-over true
-    :third-deal true
     false))
-
-(cell= (prn game-state))
-
-;;(cell= (prn current-hand-index))
-;;(cell= (prn held-cards))
 
 (defn record-score
   "Add the score from the current hand to the total"
@@ -112,19 +105,16 @@
   []
   (case @game-state
     ;; score and reset the cards
-    :game-over (muck)
+    :game-over 
+      (dosync
+        (record-score)
+        (muck))
     ;; turn off the holds when the next option is score/muck
     :second-deal 
       (dosync
         (replace-hold-cards)
         (clear-hold-cards)
         (swap! deal-count inc))
-    :third-deal
-      (dosync
-        (swap! deal-count inc)
-        (clear-hold-cards)
-        (record-score))
-    ;; replace the non-held cards
     (dosync 
       (swap! deal-count inc)
       (replace-hold-cards))))
@@ -150,7 +140,11 @@
     (div :class "hand"
       (loop-tpl
         :bindings [[idx [card info]] current-hand-index]
-          (img 
-            :src (cell= (:url info))
-            :do-class (cell= {:selected (get-in current-hand [idx 1 :held])})
-            :click #(toggle-hold @idx))))))
+        (div :class "card"
+          (div 
+            :class "indicator"
+            :do-class (cell= {:part-of-hand (boolean (some #{card} scored-cards))})
+            (img 
+              :src (cell= (:url info))
+              :do-class (cell= {:selected (get-in current-hand [idx 1 :held])})
+              :click #(toggle-hold @idx))))))))

@@ -1,6 +1,19 @@
+.hand {
+    
+}
+
+.hand .card {
+    width: 10%;
+    float: left;
+}
+
 .hand img {
-  width: 10%;
+  width: 100%;
   height: auto;
+}
+
+.part-of-hand {
+  border-bottom: 3px #00FF00 solid;
 }
 
 .selected {

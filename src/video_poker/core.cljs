@@ -42,8 +42,6 @@
   (reset! discarded [])
   (reset! available (deck)))
 
-(prn available)
-
 ;; map of cards to numeric values for sorting
 (def card-values
   (into {} (map-indexed (fn [i v] [v (+ i 1)]) suit-range)))
@@ -58,7 +56,6 @@
       [idx {:url url :held false}]))
   ([pick]
     (let [url (get @available pick)]
-      (prn @available)
       (swap! available dissoc pick)
       [pick {:url url :held false}])))
   
@@ -111,7 +108,7 @@
   "Return the single pair if the hand contains exactly one pair"
   (let [pairs (pairs hand)]
     (if (= 1 (count pairs))
-      (first pairs)
+      (second (first pairs))
       false)))
 
 (defn two-pair?
@@ -120,7 +117,7 @@
    two distinct pairs"
   (let [pairs (pairs hand)]
     (if (= 2 (count pairs))
-      (flatten pairs)
+      (flatten (vals pairs))
       false)))
     
 (defn three-of-a-kind?
@@ -128,7 +125,7 @@
   "Return the three cards indicative of 3-of-a-kind (3 cards of the same value)"
   (let [counts (count-same-value hand)
         trips (filter #(= 3 (count %1)) (vals counts))]
-    (if (some? trips)
+    (if (> (count trips) 0)
       (flatten trips)
       false)))
 
@@ -166,11 +163,11 @@
   (let [sorted (sort-by #(card-value %1) hand)
         numeric (map card-value sorted)
         aces (filterv ace? sorted)]
-    (prn card-values)
-    (prn (last sorted))
+    (prn "straight?" sorted numeric aces (int-sequence? numeric))
     (if (int-sequence? numeric)
       hand
-      (if (and (= (count aces) 1) (king? (last sorted)))
+      ;; if it's not sequential, make sure it's not an ace-high straight
+      (if (= numeric [1 10 11 12 13])
         hand
         false))))
       
@@ -198,7 +195,7 @@
   "Return true if the hand contains four cards of the same value"
   (let [counts (count-same-value hand)
         quads (filter #(= 4 (count %1)) (vals counts))]
-    (if (some? quads)
+    (if (> (count quads) 0)
       (flatten quads)
       false)))
 
@@ -216,11 +213,13 @@
 (defn royal-flush?
   [hand]
   "Return true if the hand is a straight flush, containing the sequence 
-   10-J-K-Q-A"
+   10-J-K-Q-A - checks for straight flush, with an ace and a king to differentiate
+   from an ace-low straight flush"
   (if
     (and 
       (straight-flush? hand)
-      (some #(= (value-code %1) "A") hand))
+      (some #(= (value-code %1) "A") hand)
+      (some #(= (value-code %1) "K") hand))
     hand
     false))
 
@@ -231,8 +230,8 @@
         high (last sorted)
         lead (first sorted)]
     (if (ace? lead)
-      lead
-      high)))
+      [lead]
+      [high])))
 
 ;; mapping of each kind of hand, to its value and check function
 (def hands 
@@ -240,20 +239,18 @@
     [10 pair? "Pair"]
     [15 two-pair? "Two Pair"]
     [20 three-of-a-kind? "Three of a Kind"]
+    [80 royal-flush? "Royal Flush"]
+    [70 straight-flush? "Straight Flush"]
     [30 straight? "Straight"]
     [40 flush? "Flush"]
     [60 four-of-a-kind? "Four of a Kind"]
-    [70 straight-flush? "Straight Flush"]
-    [80 royal-flush? "Royal Flush"]
     [0 high-card? "High Card"]])
 
 (defn read-hand
   [hand]
   "Return a string and a value representing the given hand (e.g. 'Royal Flush' 80)"
-  (prn (count-same-value hand))
-  (prn (count-same-suit hand))
   (loop [to-inspect hands]
     (let [[value check name] (first to-inspect)]
       (if-let [matches (check hand)]
-        [name value]
+        [name value (vec matches)]
         (recur (rest to-inspect))))))
