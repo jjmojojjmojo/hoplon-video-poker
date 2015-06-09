@@ -1,0 +1,19 @@
+(page "display.html"
+    (:require [video-poker.core :as core]))
+
+(cell= (prn (core/deck)))
+
+(html
+  (head
+    (title "Hoplon Video Poker - Display All Cards In The Deck")
+    (link 
+      :rel "stylesheet" 
+      :href "css/style.css" 
+      :type "text/css"))
+  (body
+    (h1 "Deck")
+    (div :class "hand"
+      (loop-tpl
+        :bindings [[code url] (core/deck)]
+        (div :class "card"
+          (img :src url))))))
