@@ -2,8 +2,8 @@
     (:require [video-poker.core :as core]))
 
 (defc deal-count 0)
-;;(defc current-hand (core/deal-hand :fixed ["S4" "C4" "C2" "S3" "D5"]))
-(defc current-hand (core/deal-hand))
+(defc current-hand (core/deal-hand :fixed ["CQ" "C6" "C2" "C3" "D5"]))
+;;(defc current-hand (core/deal-hand))
 (defc= current-info (core/read-hand (keys current-hand)))
 (defc= current-hand-index (map-indexed #(vector %1 %2) current-hand))
 
