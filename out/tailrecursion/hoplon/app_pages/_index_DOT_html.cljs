@@ -2,11 +2,11 @@
 
 (defc deal-count 0)
 
-(defc current-hand (core/deal-hand))
+(defc current-hand (core/deal-hand :fixed ["CQ" "C6" "C2" "C3" "D5"]))
 
 (defc= current-info (core/read-hand (keys current-hand)))
 
-(defc= current-hand-index (map-indexed (fn* [p1__1525# p2__1526#] (vector p1__1525# p2__1526#)) current-hand))
+(defc= current-hand-index (map-indexed (fn* [p1__1702# p2__1703#] (vector p1__1702# p2__1703#)) current-hand))
 
 (cell= (prn current-info))
 
@@ -18,7 +18,7 @@
 
 (defc total 0)
 
-(defc= held-cards (map (fn* [p1__1527#] (get-in p1__1527# [1 1 :held])) current-hand-index))
+(defc= held-cards (map (fn* [p1__1704#] (get-in p1__1704# [1 1 :held])) current-hand-index))
 
 (defc= game-state (case deal-count 0 :first-deal 1 :second-deal :game-over))
 
@@ -26,7 +26,7 @@
 
 (defc= lock-holds (case game-state :game-over true false))
 
-(defn record-score "Add the score from the current hand to the total" [] (swap! total (fn* [p1__1528#] (+ p1__1528# (clojure.core/deref score)))))
+(defn record-score "Add the score from the current hand to the total" [] (swap! total (fn* [p1__1705#] (+ p1__1705# (clojure.core/deref score)))))
 
 (defn muck "Discard the entire hand, reset the deck, re-deal, clear holds" [] (dosync (reset! deal-count 0) (core/reset-deck) (reset! current-hand (core/deal-hand))))
 
@@ -38,9 +38,9 @@
 
 (defn new-card "Discard the card at the given index, and replace it with a new one" [idx] (core/discard (get-in (clojure.core/deref current-hand) [idx 0])) (reset! current-hand (assoc-in (clojure.core/deref current-hand) [idx] (core/deal))))
 
-(defn replace-hold-cards "Replace all of the held cards with new ones" [] (apply-to-hand (fn* [p1__1530# p2__1531# p3__1529#] (if (not (:held p3__1529#)) (new-card p1__1530#)))))
+(defn replace-hold-cards "Replace all of the held cards with new ones" [] (apply-to-hand (fn* [p1__1707# p2__1708# p3__1706#] (if (not (:held p3__1706#)) (new-card p1__1707#)))))
 
-(defn clear-hold-cards "Clear the hold state on all cards" [] (apply-to-hand (fn* [p1__1532#] (hold-state p1__1532# false))))
+(defn clear-hold-cards "Clear the hold state on all cards" [] (apply-to-hand (fn* [p1__1709#] (hold-state p1__1709# false))))
 
 (defn new-cards "Discard the unheld cards, get new ones from the deck" [] (case (clojure.core/deref game-state) :game-over (dosync (record-score) (muck)) :second-deal (dosync (replace-hold-cards) (clear-hold-cards) (swap! deal-count inc)) (dosync (swap! deal-count inc) (replace-hold-cards))))
 

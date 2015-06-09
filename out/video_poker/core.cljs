@@ -17,30 +17,35 @@
   "Construct a vector of urls corresponding to each card in the given suit"
   [suit]
   (let [suit-code (string/upper-case (first suit))]
-    (into {} (map (fn [v] [(str suit-code v) (str "cards/" suit "/" v ".svg")]) suit-range))))
+    (map (fn [v] [(str suit-code v) (str "cards/" suit "/" v ".svg")]) suit-range)))
 
 ;; all cards
 (defn deck
   "Creates a deck"
   []
-  (let [hearts (suit-urls "hearts")
+  (let [clubs (suit-urls "clubs")
+        hearts (suit-urls "hearts")
         spades (suit-urls "spades")
-        diamonds (suit-urls "diamonds")
-        clubs (suit-urls "clubs")]
-    (conj hearts spades diamonds clubs)))
+        diamonds (suit-urls "diamonds")]
+    (concat clubs hearts spades diamonds)))
+
+(defn deck-map
+  "Creates a deck as a map"
+  []
+  (into {} (deck)))
 
 ;; discarded cards
 (defc discarded [])
 
 ;; cards without the discarded ones
-(defc available (deck))
+(defc available (deck-map))
 
 
 (defn reset-deck
   "Resets all of the cells regarding cards dealt and available"
   []
   (reset! discarded [])
-  (reset! available (deck)))
+  (reset! available (deck-map)))
 
 ;; map of cards to numeric values for sorting
 (def card-values
